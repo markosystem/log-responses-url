@@ -1,0 +1,1 @@
+sites = ['https://dev.ecoacu.com.br/contabil/healthcheck','https://dev.ecoacu.com.br/arrecadacaos/healthcheck','https://dev.ecoacu.com.br/frotas/healthcheck']
