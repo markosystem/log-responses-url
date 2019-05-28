@@ -3,18 +3,21 @@ from urls import sites
 from model.log import Log
 import datetime
 from model.dao import Dao
+from model.mail import Mail
 from config import CONFIG
 import sentry_sdk
 
 
-class Main:
-    def __init__(self):
-        t = Log()
-        for s in sites:
-            t.date = datetime.datetime.now()
-            t.url = s
-            t.status = requests.get(s).status_code
-            print(t)
+def main():
+    print(CONFIG.get("SMTP_SERVER"))
+    #if CONFIG.get("SENDMAIL")
+        #mail = Mail()
+        #mail.send_mail()
+    loop = 10
+    seconds = 0.01
+    [threading.Thread(target=worker, args=(loop, seconds, s)).start()
+     for s in CONFIG.get("SITES_HEALTHCHECK")]
+
 
 def worker(loop, seconds, url):
     i = 1
