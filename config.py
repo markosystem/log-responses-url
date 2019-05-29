@@ -18,4 +18,4 @@ CONFIG["SMTP_RESPONSE"] = os.getenv("SMTP_RESPONSE")
 CONFIG["SMTP_PORT"] = os.getenv("SMTP_PORT")
 CONFIG["SMTP_USERNAME"] = os.getenv("SMTP_USERNAME")
 CONFIG["SMTP_PASSWORD"] = os.getenv("SMTP_PASSWORD")
-CONFIG["SENDMAIL"] = os.getenv("SENDMAIL")
+CONFIG["SENDMAIL"] = bool(os.getenv("SENDMAIL")) or False

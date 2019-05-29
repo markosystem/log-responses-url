@@ -3,16 +3,16 @@ from urls import sites
 from model.log import Log
 import datetime
 from model.dao import Dao
-from model.mail import Mail
+from utils.mail import Mail
 from config import CONFIG
 import sentry_sdk
 
 
 def main():
-    print(CONFIG.get("SMTP_SERVER"))
-    #if CONFIG.get("SENDMAIL")
-        #mail = Mail()
-        #mail.send_mail()
+    #print(CONFIG.get("SMTP_SERVER"))
+    #if CONFIG.get("SENDMAIL"):
+    #    mail = Mail()
+    #    mail.send_mail()
     loop = 10
     seconds = 0.01
     [threading.Thread(target=worker, args=(loop, seconds, s)).start()
