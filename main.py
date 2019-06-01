@@ -9,10 +9,6 @@ import sentry_sdk
 
 
 def main():
-    #print(CONFIG.get("SMTP_SERVER"))
-    #if CONFIG.get("SENDMAIL"):
-    #    mail = Mail()
-    #    mail.send_mail()
     loop = 10
     seconds = 0.01
     [threading.Thread(target=worker, args=(loop, seconds, s)).start()
@@ -21,6 +17,7 @@ def main():
 
 def worker(loop, seconds, url):
     i = 1
+    total_erros = 0
     dao = Dao()
     while(i <= loop):
         print('check => ', url, 'i => ', i)
@@ -33,6 +30,13 @@ def worker(loop, seconds, url):
                 sentry_sdk.init(CONFIG.get("SENTRY_URL"))
                 sentry_sdk.capture_exception(e)
             status_code = CONFIG.get("REQUEST_DEFAULT_ERROR")
+            total_erros += 1
+
+        if total_erros > CONFIG.get("NUMBER_ERRORS_SEND_MAIL"):
+            if CONFIG.get("SENDMAIL"):
+                mail = Mail(url, status_code)
+                mail.send_mail()
+            total_erros = 0
 
         try:
             dao.insert(log_entity(url, status_code, (time.time() - start)))
@@ -44,6 +48,7 @@ def worker(loop, seconds, url):
 
         i += 1
         time.sleep(seconds)
+
 
 
 def log_entity(message, status, response_time, date=datetime.datetime.now()):

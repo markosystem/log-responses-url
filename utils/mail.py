@@ -3,6 +3,7 @@ import email.utils
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from config import CONFIG
+import sentry_sdk
 
 # Replace sender@example.com with your "From" address.
 # This address must be verified.
@@ -32,9 +33,9 @@ PORT = CONFIG.get("SMTP_PORT")
 
 
 class Mail():
-    def __init__(self):
+    def __init__(self, url, status):
         # The subject line of the email.
-        SUBJECT = 'Amazon SES Test (Python smtplib)'
+        SUBJECT = "Alerta! {0}".format(url)
 
         # The email body for recipients with non-HTML email clients.
         BODY_TEXT = ("Amazon SES Test\r\n"
@@ -43,17 +44,7 @@ class Mail():
                      )
 
         # The HTML body of the email.
-        BODY_HTML = """<html>
-        <head></head>
-        <body>
-        <h1>Amazon SES SMTP Email Test</h1>
-        <p>This email was sent with Amazon SES using the
-            <a href='https://www.python.org/'>Python</a>
-            <a href='https://docs.python.org/3/library/smtplib.html'>
-            smtplib</a> library.</p>
-        </body>
-        </html>
-                    """
+        BODY_HTML = "<html><head></head><body><h1>Sistema Fora do Ar!</h1><p>Informamos que o domínio a baixo econtra-se inacessível.</p><p>URL: {0}<br/>Último Status: {1}</body></html>".format(url, status)
 
         # Create message container - the correct MIME type is multipart/alternative.
         self.msg = MIMEMultipart('alternative')
@@ -86,6 +77,8 @@ class Mail():
             server.close()
         # Display an error message if something goes wrong.
         except Exception as e:
-            print("Error: ", e)
+            if CONFIG.get("SENTRY_URL") != "":
+                sentry_sdk.init(CONFIG.get("SENTRY_URL"))
+                sentry_sdk.capture_exception(e)
         else:
             print("Email sent!")
